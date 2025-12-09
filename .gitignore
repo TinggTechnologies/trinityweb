@@ -1,0 +1,10 @@
+# Configuration files
+api/config/config.php
+
+# Uploads
+uploads/
+api/uploads/
+
+# Environment files
+.env
+.env.local
