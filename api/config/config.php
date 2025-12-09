@@ -1,11 +1,30 @@
 <?php
 /**
  * Application Configuration
- * Supports both local and production environments
- *
- * Local: localhost/trinity/ng
- * Production: trinity.futurewebhost.com.ng/ng
+ * Loads environment variables from .env file
  */
+
+// Load environment variables
+function loadEnv($path) {
+    if (!file_exists($path)) {
+        die('.env file not found. Copy .env.example to .env and configure it.');
+    }
+    
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        
+        list($name, $value) = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim($value);
+        
+        if (!array_key_exists($name, $_ENV)) {
+            $_ENV[$name] = $value;
+        }
+    }
+}
+
+loadEnv(__DIR__ . '/../../../.env');
 
 // Detect environment
 $isLocal = (
@@ -14,76 +33,75 @@ $isLocal = (
      strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)
 );
 
-// Database Configuration - Different for local vs production
+// Database Configuration
 if ($isLocal) {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'root');  // Local XAMPP default
-    define('DB_PASS', '');      // Local XAMPP default (empty)
-    define('DB_NAME', 'trinitydistribution_trinity');
+    define('DB_HOST', $_ENV['DB_HOST_LOCAL']);
+    define('DB_USER', $_ENV['DB_USER_LOCAL']);
+    define('DB_PASS', $_ENV['DB_PASS_LOCAL']);
+    define('DB_NAME', $_ENV['DB_NAME_LOCAL']);
 } else {
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'trinitydistribution_trinity');
-    define('DB_PASS', 'DW4Dnd2xfs6qr9zBGP4Y');
-    define('DB_NAME', 'trinitydistribution_trinity');
+    define('DB_HOST', $_ENV['DB_HOST_PROD']);
+    define('DB_USER', $_ENV['DB_USER_PROD']);
+    define('DB_PASS', $_ENV['DB_PASS_PROD']);
+    define('DB_NAME', $_ENV['DB_NAME_PROD']);
 }
 
-// Application Settings - Environment-aware URLs
+// Application Settings
 define('APP_NAME', 'Trinity Distribution');
 
 if ($isLocal) {
-    define('APP_URL', 'http://localhost/trinity');
-    define('BASE_URL', 'http://localhost/trinity');
-    define('FRONTEND_URL', 'http://localhost/trinity/ng');
-    define('API_URL', 'http://localhost/trinity/api');
-    define('ASSETS_URL', 'http://localhost/trinity/assets');
-    define('UPLOADS_URL', 'http://localhost/trinity/uploads');
+    define('APP_URL', $_ENV['APP_URL_LOCAL']);
+    define('BASE_URL', $_ENV['APP_URL_LOCAL']);
+    define('FRONTEND_URL', $_ENV['FRONTEND_URL_LOCAL']);
+    define('API_URL', $_ENV['API_URL_LOCAL']);
+    define('ASSETS_URL', $_ENV['APP_URL_LOCAL'] . '/assets');
+    define('UPLOADS_URL', $_ENV['APP_URL_LOCAL'] . '/uploads');
 } else {
-    define('APP_URL', 'https://trinity.futurewebhost.com.ng');
-    define('BASE_URL', 'https://trinity.futurewebhost.com.ng');
-    define('FRONTEND_URL', 'https://trinity.futurewebhost.com.ng/ng');
-    define('API_URL', 'https://trinity.futurewebhost.com.ng/api');
-    define('ASSETS_URL', 'https://trinity.futurewebhost.com.ng/assets');
-    define('UPLOADS_URL', 'https://trinity.futurewebhost.com.ng/uploads');
+    define('APP_URL', $_ENV['APP_URL_PROD']);
+    define('BASE_URL', $_ENV['APP_URL_PROD']);
+    define('FRONTEND_URL', $_ENV['FRONTEND_URL_PROD']);
+    define('API_URL', $_ENV['API_URL_PROD']);
+    define('ASSETS_URL', $_ENV['APP_URL_PROD'] . '/assets');
+    define('UPLOADS_URL', $_ENV['APP_URL_PROD'] . '/uploads');
 }
 
-// Store environment flag
 define('IS_LOCAL', $isLocal);
 
 // Security Settings
-define('JWT_SECRET', 'your-secret-key-change-this-in-production'); // Change this!
-define('JWT_EXPIRY', 86400); // 24 hours
-define('SESSION_LIFETIME', 86400); // 24 hours
-define('REMEMBER_ME_EXPIRY', 2592000); // 30 days
+define('JWT_SECRET', $_ENV['JWT_SECRET']);
+define('JWT_EXPIRY', (int)$_ENV['JWT_EXPIRY']);
+define('SESSION_LIFETIME', 86400);
+define('REMEMBER_ME_EXPIRY', 2592000);
 
 // File Upload Settings
 define('UPLOAD_DIR', __DIR__ . '/../../uploads/');
 define('ARTWORK_DIR', UPLOAD_DIR . 'artworks/');
 define('PROFILE_IMAGE_DIR', UPLOAD_DIR . 'profile_images/');
 define('AUDIO_DIR', UPLOAD_DIR . 'audio/');
-define('MAX_FILE_SIZE', 10485760); // 10MB
-define('MAX_AUDIO_SIZE', 52428800); // 50MB
+define('MAX_FILE_SIZE', 10485760);
+define('MAX_AUDIO_SIZE', 52428800);
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/jpg']);
 define('ALLOWED_AUDIO_TYPES', ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/flac']);
 
 // Email Configuration
-define('MAIL_FROM', 'trinitydistribution@futurewebhost.com.ng');
-define('MAIL_FROM_NAME', 'Trinity Distribution');
+define('MAIL_FROM', $_ENV['MAIL_FROM']);
+define('MAIL_FROM_NAME', $_ENV['MAIL_FROM_NAME']);
 define('ADMIN_EMAIL', 'admin@yourdomain.com');
 
-// SMTP Configuration (for sending emails)
+// SMTP Configuration
 define('SMTP_ENABLED', true);
-define('SMTP_HOST', 'smtp.gmail.com');  // Change to your SMTP server
-define('SMTP_PORT', 587);
-define('SMTP_USERNAME', '');  // Your SMTP username/email
-define('SMTP_PASSWORD', '');  // Your SMTP password or app password
-define('SMTP_SECURE', 'tls'); // 'tls' or 'ssl'
+define('SMTP_HOST', $_ENV['SMTP_HOST']);
+define('SMTP_PORT', (int)$_ENV['SMTP_PORT']);
+define('SMTP_USERNAME', $_ENV['SMTP_USERNAME']);
+define('SMTP_PASSWORD', $_ENV['SMTP_PASSWORD']);
+define('SMTP_SECURE', $_ENV['SMTP_SECURE']);
 
 // Pagination
 define('DEFAULT_PAGE_SIZE', 10);
 define('MAX_PAGE_SIZE', 100);
 
-// Error Reporting (set to 0 in production)
-define('DEBUG_MODE', true);
+// Error Reporting
+define('DEBUG_MODE', filter_var($_ENV['DEBUG_MODE'], FILTER_VALIDATE_BOOLEAN));
 
 if (DEBUG_MODE) {
     error_reporting(E_ALL);
@@ -93,6 +111,4 @@ if (DEBUG_MODE) {
     ini_set('display_errors', 0);
 }
 
-// Timezone
 date_default_timezone_set('UTC');
-
