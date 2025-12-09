@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../assets/images/logo.png" type="image/png" />
+    <title>Edit Release - Trinity Distribution Admin</title>
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-red: #ED3237;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle { display: block; }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.show { display: block; }
+        }
+
+        .logo-section {
+            text-align: left;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0;
+            color: white;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            margin: 0;
+            opacity: 0.8;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .nav-item.legacy {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item.legacy:hover, .nav-item.legacy.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left-color: white;
+            color: white;
+        }
+
+        .nav-item i { font-size: 1.1rem; width: 24px; text-align: center; }
+
+        /* Release Card */
+        .release-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-pic {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10rem;
+            color: #6c757d;
+            overflow: hidden;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .profile-pic {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        .btn-danger {
+            background-color: #ED3237;
+            border-color: #ED3237;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-draft { background: #ffc107; color: #000; }
+        .status-pending { background: #17a2b8; color: #fff; }
+        .status-approved { background: #28a745; color: #fff; }
+        .status-rejected { background: #dc3545; color: #fff; }
+        .status-distributed { background: #6f42c1; color: #fff; }
+        .status-live { background: #28a745; color: #fff; }
+
+        .track-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .owner-info-card {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Loading Overlay */
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader-overlay.active {
+            display: flex;
+        }
+
+        .loader-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-section">
+            <h1 class="logo-text">trinity</h1>
+            <p class="logo-subtitle">DISTRIBUTION</p>
+        </div>
+        <ul class="nav flex-column p-2">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-white" href="songs">
+                    <i class="fas fa-music"></i> All Releases
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="royalty">
+                    <i class="fas fa-hand-holding-usd"></i> Royalty Request
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="payments">
+                    <i class="fas fa-money-check-alt"></i> Payments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="messaging">
+                    <i class="fas fa-comments"></i> Messaging
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="users">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="administration">
+                    <i class="fas fa-user-shield"></i> Administrators
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="#" onclick="logout(); return false;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-card">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 mb-0">Saving changes...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center py-5">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading release details...</p>
+            </div>
+
+            <!-- Release Content (hidden until loaded) -->
+            <div id="releaseContent" style="display: none;">
+                <div class="release-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0">Edit Release</h2>
+                        <div>
+                            <span id="statusBadge" class="status-badge me-2"></span>
+                            <a href="./songs" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Releases
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Alert Container -->
+                    <div id="alertContainer"></div>
+
+                    <!-- Owner Info -->
+                    <div class="owner-info-card">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-person"></i> Owner:</strong> <span id="ownerName">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-envelope"></i> Email:</strong> <span id="ownerEmail">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong><i class="bi bi-hash"></i> User ID:</strong> <span id="ownerId">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="releaseForm">
+                        <div class="row">
+                            <!-- Cover Art Section -->
+                            <div class="col-lg-3">
+                                <div class="px-4 py-3 rounded">
+                                    <div class="row g-3">
+                                        <h4 class="mb-4 mt-0 text-center">Cover Art</h4>
+                                        <div class="text-center">
+                                            <div class="profile-pic mb-2" id="artworkPreviewContainer">
+                                                <img id="artworkPreview" src="" alt="Artwork" style="display: none;">
+                                                <i class="fas fa-fw fa-image" id="artworkPlaceholder"></i>
+                                            </div>
+                                            <p class="text-muted mt-3 mb-0">Release Artwork</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Fields Section -->
+                            <div class="col-lg-9">
+                                <div class="row mb-3">
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Release Title: <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" id="releaseTitle" required>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Release Version:</label>
+                                        <input class="form-control" type="text" id="releaseVersion" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Catalog #:</label>
+                                        <input class="form-control" type="text" id="catalogNumber" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-lg-12 mb-3">
+                                        <label class="form-label">Primary Artist(s):</label>
+                                        <input class="form-control" type="text" id="primaryArtist" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-lg-3 mb-3">
+                                        <label class="form-label">UPC:</label>
+                                        <input class="form-control" type="text" id="upcCode" placeholder="Enter UPC code">
+                                    </div>
+                                    <div class="col-lg-3 mb-3">
+                                        <label class="form-label">ISRC:</label>
+                                        <input class="form-control" type="text" id="isrcCode" placeholder="Enter ISRC code">
+                                    </div>
+                                    <div class="col-lg-3 mb-3">
+                                        <label class="form-label">Genre:</label>
+                                        <input class="form-control" type="text" id="genre" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                    <div class="col-lg-3 mb-3">
+                                        <label class="form-label">Subgenre:</label>
+                                        <input class="form-control" type="text" id="subgenre" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Label Name:</label>
+                                        <input class="form-control" type="text" id="labelName" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Number of Tracks:</label>
+                                        <input class="form-control" type="text" id="numTracks" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Pricing Tier:</label>
+                                        <input class="form-control" type="text" id="pricingTier" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-lg-6 mb-3">
+                                        <label class="form-label">© C-Line:</label>
+                                        <input class="form-control" type="text" id="cLine" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                    <div class="col-lg-6 mb-3">
+                                        <label class="form-label">℗ P-Line:</label>
+                                        <input class="form-control" type="text" id="pLine" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Release Date:</label>
+                                        <input class="form-control" type="date" id="releaseDate">
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Status: <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="status">
+                                            <option value="draft">Draft</option>
+                                            <option value="pending">Pending Review</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                            <option value="distributed">Distributed</option>
+                                            <option value="live">Live</option>
+                                            <option value="taken_down">Taken Down</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">Created:</label>
+                                        <input class="form-control" type="text" id="createdAt" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="button" class="btn btn-danger btn-lg" onclick="saveRelease()">
+                                    <i class="bi bi-check-circle"></i> Save Changes
+                                </button>
+                                <a href="./songs" class="btn btn-secondary btn-lg ms-2">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/admin/edit-release.js"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
+

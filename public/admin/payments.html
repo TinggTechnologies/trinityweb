@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Requests - Trinity Distribution Admin</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        :root {
+            --primary-red: #ED3237;
+            --secondary: #6c757d;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                margin-top: 3rem;
+            }
+            .page-label {
+                margin: -20px -10px 20px -10px !important;
+                padding: 15px 10px !important;
+            }
+            .page-label-heading {
+                font-size: 1.3rem !important;
+            }
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        /* Logo styling */
+        .logo-section {
+            text-align: left;
+            padding: 0 20px 30px 20px;
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .page-label {
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
+            margin: -20px -20px 20px -20px;
+            padding: 15px 20px;
+        }
+        .page-label-heading {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--primary-red);
+        }
+        .page-label-subheading {
+            font-size: 0.95rem;
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+        .custom-card {
+            border: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .btn-primary {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+        .btn-primary:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .status-badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-approved {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        .payment-details-card {
+            background-color: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .detail-value {
+            color: #212529;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <h1 class="logo-text">TRINITY</h1>
+            <p class="logo-subtitle">Distribution Admin</p>
+        </div>
+
+        <nav class="nav flex-column px-3">
+            <a class="nav-link" href="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a class="nav-link" href="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a class="nav-link" href="songs">
+                <i class="fas fa-music"></i> Songs
+            </a>
+            <a class="nav-link" href="royalty">
+                <i class="fas fa-dollar-sign"></i> Royalty
+            </a>
+            <a class="nav-link active" href="payments">
+                <i class="fas fa-money-check-alt"></i> Payments
+            </a>
+            <a class="nav-link" href="earnings">
+                <i class="fas fa-file-csv"></i> Earnings
+            </a>
+            <a class="nav-link" href="messaging">
+                <i class="fas fa-envelope"></i> Messaging
+            </a>
+            <a class="nav-link" href="administration">
+                <i class="fas fa-user-shield"></i> Administration
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Label -->
+        <div class="page-label">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-label-heading">Payment Requests</h1>
+                    <p class="page-label-subheading">Manage user payment requests and approve withdrawals</p>
+                </div>
+                <div>
+                    <span class="me-3 d-none d-md-inline" id="adminName">Admin</span>
+                    <button class="btn btn-outline-danger btn-sm" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Requests Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="paymentsTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Requested Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data loaded via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Details Modal -->
+    <div class="modal fade" id="paymentDetailsModal" tabindex="-1" aria-labelledby="paymentDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentDetailsModalLabel">
+                        <i class="fas fa-info-circle"></i> Payment Request Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="paymentDetailsContent">
+                    <!-- Content loaded via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="rejectBtn" style="display: none;">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                    <button type="button" class="btn btn-warning" id="pendingBtn" style="display: none;">
+                        <i class="fas fa-clock"></i> Set Pending
+                    </button>
+                    <button type="button" class="btn btn-success" id="approveBtn" style="display: none;">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="../js/config.js"></script>
+    <script src="../js/admin/payments.js"></script>
+</body>
+</html>
+
+

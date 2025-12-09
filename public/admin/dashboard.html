@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Trinity Distribution</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-red: #ED3237;
+            --secondary: #6c757d;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .analysis-card {
+                min-width: 100%;
+                margin: 10px 0;
+            }
+            .page-label {
+                margin: -20px -10px 20px -10px !important;
+                padding: 15px 10px !important;
+            }
+            .page-label-heading {
+                font-size: 1.3rem !important;
+            }
+            .chart-container {
+                margin: 10px 0;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        
+        /* Logo styling to match image */
+        .logo-section {
+            text-align: left;
+            padding: 0 20px 30px 20px;
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+            font-weight: 300;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .page-label {
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
+            margin: -20px -20px 20px -20px;
+            padding: 15px 20px;
+        }
+        .page-label-heading {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #333;
+        }
+        .page-label-subheading {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .board-analysis {
+            margin-bottom: 20px;
+        }
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            transition: transform 0.3s;
+            flex: 1;
+            min-width: 200px;
+        }
+        .analysis-card:hover {
+            transform: translateY(-5px);
+        }
+        .analysis-icon {
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .secondary-text {
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .page-divider {
+            height: 1px;
+            background-color: #dee2e6;
+            margin: 20px 0;
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 450px; /* Fixed height for the container */
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 350px; /* Fixed height for the chart */
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+        <div class="logo-section">
+            <h1 class="logo-text">trinity</h1>
+            <p class="logo-subtitle">DISTRIBUTION</p>
+        </div>
+        
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="dashboard">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="songs">
+                    <i class="fas fa-music"></i> All Songs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="royalty">
+                    <i class="fas fa-hand-holding-usd"></i> Royalty Request
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="payments">
+                    <i class="fas fa-money-check-alt"></i> Payments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="messaging">
+                    <i class="fas fa-comments"></i> Messaging
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="users">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="earnings">
+                    <i class="fas fa-file-csv"></i> Earnings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="administration">
+                    <i class="fas fa-user-shield"></i> Administrators
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center ms-auto">
+                    <span class="me-3 d-none d-md-block" id="adminWelcome">Welcome, Admin</span>
+                    <img src="../assets/images/user.png" width="80" height="80" class="rounded-circle" alt="Admin">
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Label -->
+        <div class="page-label">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="page-label-heading text-danger">Dashboard</h3>
+                    <p class="page-label-subheading text-danger">Welcome admin</p> 
+                </div>
+            </div>
+        </div>
+
+        <div class="container p-3">
+            <!-- Dashboard Analysis -->
+            <div class="board-analysis">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Users</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="usersCount">0</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Tracks</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="tracksCount">0</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-music"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Tickets</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="ticketsCount">0</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-ticket-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Releases</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="releasesCount">0</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-compact-disc"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Artists</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="artistsCount">0</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="no-gap secondary-text">Royalties</p>
+                                <h4 class="no-gap card-value text-danger mb-0" id="royaltiesAmount">$0.00</h4>
+                            </div>
+                            <div class="analysis-icon text-danger">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-divider mt-3"></div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="chart-container">
+                        <h6 class="primary-text text-center mb-3">Users & Submissions (Last 30 Days)</h6>
+                        <div class="chart-wrapper">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/admin/dashboard.js"></script>
+</body>
+</html>

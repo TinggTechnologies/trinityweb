@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Releases - Trinity Distribution Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #ED3237;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .analysis-card {
+                min-width: 100%;
+                margin: 10px 0;
+            }
+            .page-label {
+                margin: -20px -10px 20px -10px !important;
+                padding: 15px 10px !important;
+            }
+            .page-label-heading {
+                font-size: 1.3rem !important;
+            }
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        .logo-section {
+            text-align: left;
+            padding: 0 20px 30px 20px;
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            margin: 0;
+            opacity: 0.8;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .analysis-card:hover {
+            transform: translateY(-5px);
+        }
+        .analysis-icon {
+            font-size: 2rem;
+        }
+        .no-gap {
+            margin: 0;
+        }
+        .secondary-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* Released Songs Styles */
+        .table-img img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .col-green { color: #28a745; }
+        .col-red { color: #dc3545; }
+        .col-blue { color: #007bff; }
+        .col-yellow { color: #ffc107; }
+
+        .badge-outline {
+            padding: 6px 12px;
+            border: 1px solid;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-outline.col-red {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .badge-outline.col-green {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .badge-outline.col-blue {
+            border-color: #007bff;
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        .badge-outline.col-yellow {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .no-releases {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .no-releases i {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            margin: 2rem 0;
+        }
+
+        .pagination .page-link {
+            color: #dc3545;
+            border: 1px solid #dee2e6;
+            padding: 0.5rem 0.75rem;
+            margin: 0 2px;
+            border-radius: 4px;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-section">
+        <h1 class="logo-text">trinity</h1>
+        <p class="logo-subtitle">DISTRIBUTION</p>
+    </div>
+    <ul class="nav flex-column p-2">
+        <li class="nav-item">
+            <a class="nav-link text-white" href="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active text-white" href="songs">
+                <i class="fas fa-music"></i> All Releases
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="royalty">
+                <i class="fas fa-hand-holding-usd"></i> Royalty Request
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="payments">
+                <i class="fas fa-money-check-alt"></i> Payments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="messaging">
+                <i class="fas fa-comments"></i> Messaging
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="administration">
+                <i class="fas fa-user-shield"></i> Administrators
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4" style="box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 10px;">
+        <div class="container-fluid">
+            <div class="ms-auto d-flex align-items-center">
+                <span class="me-3 d-none d-md-block" id="adminWelcome">Welcome, Admin</span>
+                <img src="../assets/images/user.png" width="60" height="60" class="rounded-circle" alt="Admin">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Label -->
+    <div class="page-label mb-4">
+        <h3 class="text-danger mb-2">All Releases</h3>
+        <p class="text-muted">View and manage all releases from all users. Edit releases, view details, and monitor distribution status.</p>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer"></div>
+
+    <!-- Analytics Cards -->
+    <div class="board-analysis mb-4 d-flex gap-3 flex-wrap" id="analyticsCards">
+        <!-- Cards will be populated by JavaScript -->
+    </div>
+
+    <!-- Releases Table -->
+    <div class="mt-4">
+        <div id="releasesContainer">
+            <div class="text-center py-5">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Loading releases...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination Container -->
+    <div id="paginationContainer"></div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/admin/songs.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../assets/images/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/png" />
+    <title>Trinity Distribution | Create Release</title>
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header and Navigation */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0rem 1rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            max-width: 100%;
+            overflow: visible;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            max-width: calc(100% - 60px);
+        }
+
+        .logo-img {
+            height: 130px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* Desktop Menu */
+        .menu-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            flex-grow: 1;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .menu-item {
+            text-decoration: none;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .menu-item:hover {
+            color: #dc3545;
+        }
+
+        /* Desktop Dropdown */
+        .dropdown {
+            position: relative;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+
+        .dropdown button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown button:hover {
+            background-color: #c82333;
+        }
+
+        .dropdown button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.25);
+        }
+
+        .dropdown button::after {
+            content: '';
+            display: inline-block;
+            margin-left: 8px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid white;
+            transition: transform 0.3s;
+        }
+
+        .dropdown button.active::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            border-radius: 8px;
+            z-index: 9999;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+            color: #dc3545;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            padding: 4rem 1rem 1rem;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .mobile-nav.active {
+            display: block;
+        }
+
+        .mobile-nav a {
+            display: block;
+            padding: 15px 0;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        .mobile-nav a:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-dropdown {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .mobile-dropdown-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Page Loader */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-image {
+            width: 400px;
+            height: 400px;
+            object-fit: contain;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 991px) {
+            .menu-wrapper, .dropdown {
+                display: none !important;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .header-container {
+                position: relative;
+                padding: 0.5rem;
+            }
+
+            .logo-wrapper {
+                max-width: calc(100% - 60px);
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0.25rem;
+            }
+
+            .hamburger-menu {
+                right: 5px;
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-container {
+                padding: 0.1rem;
+            }
+
+            .hamburger-menu {
+                right: 3px;
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        /* Main Content */
+        .main-container {
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+        
+        .release-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .profile-pic {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10rem;
+            color: #6c757d;
+            overflow: hidden;
+        }
+        
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-pic {
+                width: 200px;
+                height: 200px;
+            }
+        }
+        
+        .artist-input-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .artist-input-group:first-child {
+            margin-top: 0;
+        }
+
+        .artist-input-group .input-group {
+            flex-wrap: nowrap;
+        }
+
+        .artist-select {
+            flex: 1;
+        }
+
+        .add-new-artist-btn {
+            border-color: #ED3237;
+            color: #ED3237;
+        }
+
+        .add-new-artist-btn:hover {
+            background-color: #ED3237;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #ED3237;
+            border-color: #ED3237;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        /* Loading Overlay */
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader-overlay.active {
+            display: flex;
+        }
+        
+        .loader-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loader-overlay" id="loaderOverlay">
+        <div class="loader-card">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 mb-0">Creating release...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <div class="release-card">
+                <h2 class="mb-4">Create New Release</h2>
+
+                <!-- Error Messages -->
+                <div id="errorMessages" class="alert alert-danger d-none"></div>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="alert alert-success d-none"></div>
+
+                <form id="releaseForm" enctype="multipart/form-data">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <!-- Cover Art Section -->
+                            <div class="col-lg-3">
+                                <div class="px-4 py-3 rounded">
+                                    <div class="row g-3">
+                                        <h4 class="mb-4 mt-0 text-center">Cover Art</h4>
+                                        <div class="text-center">
+                                            <!-- Image preview -->
+                                            <div class="profile-pic mb-2" id="artworkPreview">
+                                                <i class="fas fa-fw fa-image"></i>
+                                            </div>
+                                            <!-- Button -->
+                                            <input type="file" id="artwork" name="artwork" accept="image/*" hidden required>
+                                            <label class="btn btn-success btn-block" for="artwork">Upload</label>
+                                            <button type="button" class="btn btn-danger" id="removeArtwork">Remove</button>
+                                            <!-- Content -->
+                                            <p class="text-muted mt-3 mb-0"><span class="me-1">Note:</span>Minimum size 3000px x 3000px</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Fields Section -->
+                            <div class="col-lg-9">
+                                <div class="row mb-3">
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="release_title">Release Title: <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" id="release_title" name="release_title" required>
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="release_version">Release Version:</label>
+                                        <input placeholder="e.g. remix, refix, cover, live etc." class="form-control" type="text" id="release_version" name="release_version">
+                                    </div>
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="catalog_number">Catalog #:</label>
+                                        <input class="form-control" type="text" id="catalog_number" name="catalog_number" readonly style="background-color: #e9ecef;">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Primary Artiste: <span class="text-danger">*</span></label>
+                                        <div id="stageNamesContainer">
+                                            <div class="artist-input-group">
+                                                <div class="input-group">
+                                                    <select class="form-control artist-select" name="stage_names[]" required>
+                                                        <option value="">Select or type to add new artist</option>
+                                                    </select>
+                                                    <button type="button" class="btn btn-outline-danger add-new-artist-btn" title="Add new artist">
+                                                        <i class="bi bi-plus-lg"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-danger mt-2" id="addArtist">
+                                            <i class="bi bi-plus"></i> Add Another Artist
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- UPC -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">UPC: </label><span style="font-size: .8rem;"> (Optional)</span>
+                                        <div class="mt-2 upc-options">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="upc_option" id="upc_auto" value="auto" checked onchange="document.getElementById('upc').style.display='none'; document.getElementById('upc').value='';">
+                                                <label class="form-check-label" for="upc_auto">
+                                                    Generate by Admin
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="upc_option" id="upc_manual" value="manual" onchange="document.getElementById('upc').style.display='block'; document.getElementById('upc').focus();">
+                                                <label class="form-check-label" for="upc_manual">
+                                                    Enter UPC manually
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" id="upc" name="upc" placeholder="Enter UPC code" style="display: none;">
+                                    </div>
+
+                                    <!-- Genre -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="genre">Genre: <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="genre" id="genre" required>
+                                            <option value="">Select Genre</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Subgenre -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="subgenre">Subgenre:</label>
+                                        <select class="form-control" name="subgenre" id="subgenre">
+                                            <option value="">Select Subgenre</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- ISRC -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label">ISRC: </label><span style="font-size: .8rem;"> (Optional)</span>
+                                        <div class="mt-2 isrc-options">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="isrc_option" id="isrc_auto" value="auto" checked onchange="document.getElementById('isrc').style.display='none'; document.getElementById('isrc').value='';">
+                                                <label class="form-check-label" for="isrc_auto">
+                                                    Generate by Admin
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="isrc_option" id="isrc_manual" value="manual" onchange="document.getElementById('isrc').style.display='block'; document.getElementById('isrc').focus();">
+                                                <label class="form-check-label" for="isrc_manual">
+                                                    Enter ISRC manually
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <input class="form-control mt-2" type="text" id="isrc" name="isrc" placeholder="Enter ISRC code" style="display: none;">
+                                    </div>
+
+                                    <!-- Label Name -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="label_name">Label Name: <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" id="label_name" name="label_name" required>
+                                    </div>
+
+                                    <!-- Number of Tracks -->
+                                    <div class="col-lg-4 mb-3">
+                                        <label class="form-label" for="num_tracks">Number of Tracks: <span class="text-danger">*</span></label>
+                                        <input class="form-control" type="number" id="num_tracks" name="num_tracks" min="1" value="1" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- C-Line -->
+                                    <div class="col-lg-6 mb-3">
+                                        <label class="form-label" for="c_line_year">© C-Line:</label>
+                                        <div class="d-flex gap-2">
+                                            <select class="form-control" id="c_line_year" name="c_line_year" style="max-width: 120px;">
+                                                <option value="">Year</option>
+                                            </select>
+                                            <input class="form-control" type="text" id="c_line_text" name="c_line_text" placeholder="Copyright holder">
+                                        </div>
+                                    </div>
+
+                                    <!-- P-Line -->
+                                    <div class="col-lg-6 mb-3">
+                                        <label class="form-label" for="p_line_year">℗ P-Line:</label>
+                                        <div class="d-flex gap-2">
+                                            <select class="form-control" id="p_line_year" name="p_line_year" style="max-width: 120px;">
+                                                <option value="">Year</option>
+                                            </select>
+                                            <input class="form-control" type="text" id="p_line_text" name="p_line_text" placeholder="Producer">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- Pricing Tier -->
+                                    <div class="col-lg-6 mb-3">
+                                        <label class="form-label" for="pricing_tier">Pricing Tier:</label>
+                                        <select class="form-control" id="pricing_tier" name="pricing_tier">
+                                            <option value="">Select Pricing Tier</option>
+                                            <option value="single_black">Single - Black</option>
+                                            <option value="single_white">Single - White</option>
+                                            <option value="album">Album</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-danger btn-lg">
+                                            <i class="bi bi-check-circle"></i> Create Release
+                                        </button>
+                                        <a href="dashboard" class="btn btn-secondary btn-lg ms-2">
+                                            <i class="bi bi-x-circle"></i> Cancel
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #000; color: #fff; text-align: center; padding: 2rem 1rem; margin-top: 4rem;">
+        © <span id="currentYear"></span>. Developed and maintained by Trinity Distribution
+    </footer>
+
+    <!-- Add New Artist Modal -->
+    <div class="modal fade" id="addArtistModal" tabindex="-1" aria-labelledby="addArtistModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addArtistModalLabel"><i class="bi bi-person-plus"></i> Add New Artist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="newArtistName" class="form-label">Artist Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="newArtistName" placeholder="Enter artist name">
+                        <div class="form-text">This name will be saved for future use.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="saveNewArtistBtn">
+                        <i class="bi bi-check-lg"></i> Save Artist
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard-header.js"></script>
+    <script src="js/create-release.js"></script>
+</body>

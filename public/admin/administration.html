@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrators - Trinity Distribution</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <style>
+        :root {
+            --primary-red: #ED3237;
+            --secondary: #6c757d;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .analysis-card {
+                min-width: 100%;
+                margin: 10px 0;
+            }
+            .page-label {
+                margin: -20px -10px 20px -10px !important;
+                padding: 15px 10px !important;
+            }
+            .page-label-heading {
+                font-size: 1.3rem !important;
+            }
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        
+        /* Logo styling */
+        .logo-section {
+            text-align: left;
+            padding: 0 20px 30px 20px;
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin: 0;
+            font-weight: 300;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .page-label {
+            background-color: white;
+            border-bottom: 1px solid #dee2e6;
+            margin: -20px -20px 20px -20px;
+            padding: 15px 20px;
+        }
+        .page-label-heading {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #333;
+        }
+        .page-label-subheading {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .board-analysis {
+            margin-bottom: 20px;
+        }
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            transition: transform 0.3s;
+            flex: 1;
+            min-width: 200px;
+        }
+        .analysis-card:hover {
+            transform: translateY(-5px);
+        }
+        .analysis-icon {
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .secondary-text {
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .no-gap {
+            margin: 0;
+        }
+        .page-divider {
+            height: 1px;
+            background-color: #dee2e6;
+            margin: 20px 0;
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .custom-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .action-dropdown .dropdown-toggle {
+            background: none;
+            border: none;
+            color: #6c757d;
+        }
+        .action-dropdown .dropdown-toggle:hover {
+            color: var(--primary-red);
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--primary-red) !important;
+            border-color: var(--primary-red) !important;
+            color: white !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: var(--primary-red) !important;
+            border-color: var(--primary-red) !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-section">
+        <h1 class="logo-text">trinity</h1>
+        <p class="logo-subtitle">DISTRIBUTION</p>
+    </div>
+    <ul class="nav flex-column p-2">
+        <li class="nav-item">
+            <a class="nav-link text-white" href="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="songs">
+                <i class="fas fa-music"></i> All Songs
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="royalty">
+                <i class="fas fa-hand-holding-usd"></i> Royalty Request
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="payments">
+                <i class="fas fa-money-check-alt"></i> Payments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="messaging">
+                <i class="fas fa-comments"></i> Messaging
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active text-white" href="administration">
+                <i class="fas fa-user-shield"></i> Administrators
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4" style="box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 10px;">
+        <div class="container-fluid">
+            <div class="ms-auto d-flex align-items-center">
+                <span class="me-3 d-none d-md-block" id="adminWelcome">Welcome, Admin</span>
+                <img src="/admin/images/admin.jpg" width="60" height="60" class="rounded-circle" alt="Admin">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Label -->
+    <div class="page-label">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="page-label-heading text-danger">Administrators</h3>
+                <p class="page-label-subheading text-danger">Manage system administrators and their roles</p>
+            </div>
+            <div>
+                <button class="btn" data-bs-toggle="modal" data-bs-target="#createAdminModal" style="background-color: var(--primary-red); border-color: var(--primary-red); color: white;">
+                    <i class="fas fa-plus me-1"></i> Create Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-3">
+        <!-- Analytics Cards -->
+        <div class="board-analysis">
+            <div class="d-flex justify-content-between align-items-center flex-wrap" id="analyticsContainer">
+                <!-- Analytics cards will be populated here -->
+            </div>
+            <div class="page-divider mt-3"></div>
+        </div>
+
+        <!-- Administrators Table -->
+        <div class="custom-card">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5 class="primary-text">Administrators List</h5>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="adminsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date Added</th>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="spinner-border text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Admin Modal -->
+<div class="modal fade" id="createAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Administrator</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="createMember" class="form-label">Choose User</label>
+                    <select class="form-select" id="createMember" required>
+                        <option value="">Select a user</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="createRole" class="form-label">Assign Role</label>
+                    <select class="form-select" id="createRole" required>
+                        <option value="">Select a role</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="createAdminButton" style="background-color: var(--primary-red); border-color: var(--primary-red);">Create Administrator</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Admin Modal -->
+<div class="modal fade" id="editAdminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Administrator Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editAdminId">
+                <div class="mb-3">
+                    <label class="form-label">Administrator</label>
+                    <p class="form-control-static fw-bold" id="editAdminName"></p>
+                </div>
+                <div class="mb-3">
+                    <label for="editRole" class="form-label">Assign Role</label>
+                    <select class="form-select" id="editRole" required>
+                        <option value="">Select a role</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="updateAdminButton" style="background-color: var(--primary-red); border-color: var(--primary-red);">Update Role</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- Config -->
+<script src="../js/config.js"></script>
+<!-- Custom JS -->
+<script src="../js/admin/administration.js"></script>
+</body>
+</html>
+

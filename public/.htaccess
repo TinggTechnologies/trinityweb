@@ -1,0 +1,37 @@
+RewriteEngine On
+
+# Detect environment for proper base path
+# Local: /trinity/ng/
+# Production: /ng/
+
+RewriteCond %{HTTP_HOST} ^localhost$ [OR]
+RewriteCond %{HTTP_HOST} ^127\.0\.0\.1$
+RewriteRule ^ - [E=NG_BASE:/trinity/ng]
+
+RewriteCond %{HTTP_HOST} !^localhost$
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$
+RewriteRule ^ - [E=NG_BASE:/ng]
+
+# Remove .html extension if present in URL (redirect to clean URL)
+RewriteCond %{THE_REQUEST} \s/+(?:trinity/)?ng/([^.]+)\.html[\s?] [NC]
+RewriteRule ^ %{ENV:NG_BASE}/%1 [R=301,L]
+
+# Remove .php extension if present in URL (redirect to clean URL)
+RewriteCond %{THE_REQUEST} \s/+(?:trinity/)?ng/([^.]+)\.php[\s?] [NC]
+RewriteRule ^ %{ENV:NG_BASE}/%1 [R=301,L]
+
+# Don't rewrite if file or directory exists
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Add .html extension internally if .html file exists
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L,QSA]
+
+# Add .php extension internally if .php file exists
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L,QSA]
+
+# Handle index page
+DirectoryIndex index.html index.php

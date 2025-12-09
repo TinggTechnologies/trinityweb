@@ -1,0 +1,24 @@
+RewriteEngine On
+
+# Detect environment for proper base path
+RewriteCond %{HTTP_HOST} ^localhost$ [OR]
+RewriteCond %{HTTP_HOST} ^127\.0\.0\.1$
+RewriteRule ^ - [E=ADMIN_BASE:/trinity/ng/admin]
+
+RewriteCond %{HTTP_HOST} !^localhost$
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$
+RewriteRule ^ - [E=ADMIN_BASE:/ng/admin]
+
+# Don't rewrite if file or directory exists
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Add .html extension internally if .html file exists
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# Redirect .html to extensionless
+RewriteCond %{THE_REQUEST} \s/+(?:trinity/)?ng/admin/([^.]+)\.html[\s?] [NC]
+RewriteRule ^ %{ENV:ADMIN_BASE}/%1 [R=301,L]
+

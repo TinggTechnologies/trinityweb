@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../assets/images/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../assets/images/logo.png" />
+    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/png" />
+    <title>Trinity Distribution | Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header and Navigation */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0rem 1rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            max-width: 100%;
+            overflow: visible;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            max-width: calc(100% - 60px);
+        }
+
+        .logo-img {
+            height: 130px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* Desktop Menu */
+        .menu-wrapper {
+            display: flex;
+            gap: 1.5rem;
+            flex-grow: 1;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .menu-item {
+            text-decoration: none;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .menu-item:hover {
+            color: #dc3545;
+        }
+
+        /* Desktop Dropdown */
+        .dropdown {
+            position: relative;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+
+        .dropdown button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown button:hover {
+            background-color: #c82333;
+        }
+
+        .dropdown button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.25);
+        }
+
+        .dropdown button::after {
+            content: '';
+            display: inline-block;
+            margin-left: 8px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid white;
+            transition: transform 0.3s;
+        }
+
+        .dropdown button.active::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            border-radius: 8px;
+            z-index: 9999;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 14px;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+            color: #dc3545;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 999;
+            padding: 4rem 1rem 1rem;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .mobile-nav.active {
+            display: block;
+        }
+
+        .mobile-nav a {
+            display: block;
+            padding: 15px 0;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        .mobile-nav a:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-dropdown {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .mobile-dropdown-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* Page Loader */
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-image {
+            width: 400px;
+            height: 400px;
+            object-fit: contain;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 991px) {
+            .menu-wrapper, .dropdown {
+                display: none !important;
+            }
+
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .header-container {
+                position: relative;
+                padding: 0.5rem;
+            }
+
+            .logo-wrapper {
+                max-width: calc(100% - 60px);
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0.25rem;
+            }
+
+            .hamburger-menu {
+                right: 5px;
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-container {
+                padding: 0.1rem;
+            }
+
+            .hamburger-menu {
+                right: 3px;
+            }
+
+            .logo-img {
+                width: 120px;
+                height: auto;
+            }
+        }
+
+        body {
+            background-color: white;
+        }
+        .row{
+            padding-bottom: 0;
+        }
+        .dashboard-card {
+            height: 100%;
+            transition: transform 0.3s;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: 10px;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        #artistsContainer,
+        #tracksContainer {
+            flex: 1;
+            min-height: 300px;
+        }
+        .artist-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-width: 0;
+            gap: 10px;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .artist-row:last-of-type {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        .artist-name {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .playlist-avatar-wrapper {
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+        .playlist-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .playlist-title h6 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin: 0;
+            max-width: 200px;
+        }
+        @media (min-width: 768px) {
+            .playlist-title h6 {
+                max-width: 250px;
+            }
+        }
+        @media (min-width: 992px) {
+            .playlist-title h6 {
+                max-width: 300px;
+            }
+        }
+        .streams-container {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+        .streams-scrollable {
+            text-align: right;
+            min-width: 100px;
+        }
+        .no-space {
+            margin: 0;
+            line-height: 1.2;
+        }
+        .custom-card {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .custom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .custom-card .w-100 {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .custom-card .pe-3.ps-3 {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .col-lg-6 {
+            display: flex;
+            flex-direction: column;
+        }
+        .divider {
+            border-top: 1px solid #e0e0e0;
+        }
+        .no-data-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        .default-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .pagination-wrapper {
+            padding-top: 1rem;
+            margin-top: auto;
+            padding-bottom: 0;
+        }
+        #artistsPagination,
+        #tracksPagination {
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main class="container my-4">
+        <section class="mb-5">
+            <h1 class="display-6 mb-4">Welcome, <span id="userName"></span></h1>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <h2 class="display-4" style="color: red;">01</h2>
+                            <h3 class="h4">New Release</h3>
+                            <p class="text-muted">Create a release with a new or existing <strong>UPC</strong></p>
+                            <a href="create-release" class="btn" style="background-color: red; color: #fff;">CREATE RELEASE</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <h2 class="display-4" style="color: red;">02</h2>
+                            <h3 class="h4">Music Video</h3>
+                            <p class="text-muted">Submit your music video for distribution</p>
+                            <a href="create-release" class="btn" style="background-color: red; color: #fff;">UPLOAD MUSIC VIDEO</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <h2 class="display-4" style="color: red;">03</h2>
+                            <h3 class="h4">My Catalog</h3>
+                            <p class="text-muted">View all your old and new songs</p>
+                            <a href="released-songs" class="btn" style="background-color: red; color: #fff;">VIEW CATALOG</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-4 mt-4">
+            <div class="col-lg-6 mt-4">
+                <div class="custom-card">
+                    <div class="w-100">
+                        <div class="pe-3 ps-3 w-100 mt-3 pb-3">
+                            <h5 class="mb-4">Artists</h5>
+
+                            <div id="artistsContainer">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="artistsPagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mt-4">
+                <div class="custom-card">
+                    <div class="w-100">
+                        <div class="pe-3 ps-3 w-100 mt-3 pb-3">
+                            <h5 class="mb-4">Tracks</h5>
+
+                            <div id="tracksContainer">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="tracksPagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+            <!-- Earnings Chart Section -->
+        <section class="mb-5">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <h5 class="mb-4">Stream Earnings by Platform</h5>
+                    <div style="position: relative; height: 400px;">
+                        <canvas id="earningsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer style="background: #000; color: #fff; text-align: center; padding: 2rem 1rem; margin-top: 4rem;">
+        © <span id="currentYear"></span>. Developed and maintained by Trinity Distribution
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard-header.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
+

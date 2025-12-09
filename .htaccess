@@ -1,0 +1,38 @@
+RewriteEngine On
+
+# Detect environment - check if we're in /trinity subfolder (local) or root (production)
+# Local: localhost/trinity/ng -> /trinity/public
+# Production: trinity.futurewebhost.com.ng/ng -> /public
+
+# Set base dynamically based on environment
+RewriteCond %{HTTP_HOST} ^localhost$ [OR]
+RewriteCond %{HTTP_HOST} ^127\.0\.0\.1$
+RewriteRule ^ - [E=BASE_PATH:/trinity]
+
+RewriteCond %{HTTP_HOST} !^localhost$
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$
+RewriteRule ^ - [E=BASE_PATH:]
+
+# Allow direct access to actual files and folders (assets, uploads, api, admin)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Allow direct access to assets folder
+RewriteRule ^assets/(.*)$ assets/$1 [L]
+
+# Allow direct access to uploads folder
+RewriteRule ^uploads/(.*)$ uploads/$1 [L]
+
+# Allow direct access to api folder
+RewriteRule ^api/(.*)$ api/$1 [L]
+
+# Allow direct access to admin folder
+RewriteRule ^admin/(.*)$ admin/$1 [L]
+
+# Redirect root to /ng/
+RewriteRule ^$ ng/ [R=301,L]
+
+# Handle /ng/ routes - rewrite to public folder
+RewriteRule ^ng/?$ public/index.html [L]
+RewriteRule ^ng/(.+)$ public/$1 [L,QSA]

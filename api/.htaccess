@@ -1,0 +1,25 @@
+RewriteEngine On
+
+# Handle OPTIONS preflight requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Redirect all requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Enable CORS headers
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin, Cache-Control"
+    Header always set Access-Control-Max-Age "86400"
+</IfModule>
+
+# Increase upload limits for audio files (300MB)
+php_value upload_max_filesize 310M
+php_value post_max_size 310M
+php_value max_execution_time 600
+php_value max_input_time 600
+

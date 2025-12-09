@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royalty Management - Trinity Distribution</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #ED3237;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background: var(--primary-red);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            padding-top: 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .analysis-card {
+                min-width: 100%;
+                margin: 10px 0;
+            }
+            .page-label {
+                margin: -20px -10px 20px -10px !important;
+                padding: 15px 10px !important;
+            }
+            .page-label-heading {
+                font-size: 1.3rem !important;
+            }
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+        .logo-section {
+            text-align: left;
+            padding: 0 20px 30px 20px;
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        .logo-subtitle {
+            font-size: 0.9rem;
+            margin: 0;
+            opacity: 0.8;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar .nav-link.active {
+            background-color: white;
+            color: var(--primary-red);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            flex: 1;
+            min-width: 200px;
+        }
+        .analysis-card:hover {
+            transform: translateY(-5px);
+        }
+        .analysis-icon {
+            font-size: 2rem;
+        }
+        .no-gap {
+            margin: 0;
+        }
+        .secondary-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .action-dropdown .dropdown-toggle {
+            background: none;
+            border: none;
+            color: #6c757d;
+        }
+        .action-dropdown .dropdown-toggle:hover {
+            color: var(--primary-red);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo-section">
+        <h1 class="logo-text">trinity</h1>
+        <p class="logo-subtitle">DISTRIBUTION</p>
+    </div>
+    <ul class="nav flex-column p-2">
+        <li class="nav-item">
+            <a class="nav-link text-white" href="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="songs">
+                <i class="fas fa-music"></i> All Songs
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active text-white" href="royalty">
+                <i class="fas fa-hand-holding-usd"></i> Royalty Request
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="payments">
+                <i class="fas fa-money-check-alt"></i> Payments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="messaging">
+                <i class="fas fa-comments"></i> Messaging
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="administration">
+                <i class="fas fa-user-shield"></i> Administrators
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4" style="box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 10px;">
+        <div class="container-fluid">
+            <div class="ms-auto d-flex align-items-center">
+                <span class="me-3 d-none d-md-block" id="adminWelcome">Welcome, Admin</span>
+                <img src="../assets/images/user.png" width="80" height="80" class="rounded-circle" alt="Admin">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Label -->
+    <div class="page-label mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="text-danger">Royalty Management</h3>
+                <p class="text-muted">Manage and track royalty payments to artists</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Area -->
+    <div id="messageArea"></div>
+
+    <!-- Analytics Cards -->
+    <div class="board-analysis mb-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap" id="analyticsCards">
+            <!-- Cards will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Royalty Table Card -->
+    <div class="card p-3">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-danger">Royalty Requests</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end gap-2">
+                    <div class="position-relative" style="width:260px;">
+                        <i class="fas fa-search position-absolute" style="left:12px; top:10px; color:#888"></i>
+                        <input type="text" class="form-control ps-5" id="searchInput" placeholder="Search royalties...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover" id="royaltiesTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>Date Created</th>
+                        <th>Artist Name</th>
+                        <th>Phone Number</th>
+                        <th>Amount</th>
+                        <th>Period</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="royaltiesTableBody">
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <div class="spinner-border text-danger" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-muted mt-2">Loading royalty requests...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/admin/royalty.js"></script>
+
+</body>
+</html>
+
