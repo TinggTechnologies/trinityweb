@@ -119,13 +119,25 @@ class SplitShareController {
                 $owner = [
                     'name' => $ownerName,
                     'email' => $ownerData['email'],
-                    'percentage' => $ownerPercentage
+                    'split_percentage' => $ownerPercentage
                 ];
+            }
+
+            // Separate pending and approved invitations
+            $pending = [];
+            $approved = [];
+            foreach ($invitations as $inv) {
+                if ($inv['status'] === 'accepted') {
+                    $approved[] = $inv;
+                } else if ($inv['status'] === 'pending') {
+                    $pending[] = $inv;
+                }
             }
 
             Response::success([
                 'owner' => $owner,
-                'invitations' => $invitations
+                'pending' => $pending,
+                'approved' => $approved
             ]);
         } catch (Exception $e) {
             error_log("Error fetching split shares: " . $e->getMessage());

@@ -335,8 +335,11 @@ try {
                 if ($method === 'POST' && !$id) {
                     // Create new split share invitation
                     $controller->create();
+                } elseif ($method === 'GET' && $id === 'release' && $action) {
+                    // Get split shares for a release: /api/split-shares/release/{id}
+                    $controller->getByRelease($action);
                 } elseif ($method === 'GET' && $id && !$action) {
-                    // Get split shares for a release
+                    // Get split shares for a release (legacy)
                     $controller->getByRelease($id);
                 } elseif ($method === 'POST' && $id && $action === 'resend') {
                     // Resend invitation

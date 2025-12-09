@@ -26,21 +26,7 @@ function loadDashboardHeader() {
         <a class="menu-item" href="released-songs">RELEASES</a>
         <a class="menu-item" href="analytics">ANALYTICS</a>
         <a class="menu-item" href="royalty">PAYOUT</a>
-      </div>
-
-      <!-- Split Share Dropdown -->
-      <div class="dropdown">
-        <button><i class="bi bi-share"></i> SPLIT SHARE</button>
-        <div class="dropdown-content" id="splitShareDropdown">
-          <div class="dropdown-header">Select a Release</div>
-          <div id="splitShareReleasesList" class="releases-list">
-            <div class="text-center py-2">
-              <div class="spinner-border spinner-border-sm text-danger" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <a class="menu-item mr-3" href="split-shares"> SPLIT SHARE</a>
       </div>
 
       <!-- Desktop Dropdown -->
@@ -68,16 +54,7 @@ function loadDashboardHeader() {
         <a href="analytics">ANALYTICS</a>
         <a href="royalty">PAYOUT</a>
 
-        <div class="mobile-dropdown">
-          <div class="mobile-dropdown-header"><i class="bi bi-share"></i> SPLIT SHARE</div>
-          <div id="splitShareReleasesListMobile" class="releases-list">
-            <div class="text-center py-2">
-              <div class="spinner-border spinner-border-sm text-danger" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <a href="split-shares"> SPLIT SHARE</a>
 
         <div class="mobile-dropdown">
           <div class="mobile-dropdown-header"><i class="fa-solid fa-user"></i> PROFILE</div>
@@ -104,9 +81,11 @@ function initializeHeader() {
     // Page loader
     window.addEventListener("load", () => {
         const loader = document.getElementById("page-loader");
-        setTimeout(() => {
-            loader.classList.add("hidden");
-        }, 1000);
+        if (loader) {
+            setTimeout(() => {
+                loader.classList.add("hidden");
+            }, 1000);
+        }
     });
 
     // Mobile menu toggle
@@ -138,7 +117,7 @@ function initializeHeader() {
         });
     }
 
-    // Dropdown logic - handle ALL dropdowns (Split Share and Profile)
+    // Dropdown logic - handle Profile dropdown
     const dropdowns = document.querySelectorAll('.dropdown');
     dropdowns.forEach(dropdown => {
         const btn = dropdown.querySelector('button');
@@ -195,67 +174,6 @@ function initializeHeader() {
             await handleLogout();
         });
     }
-
-    // Load releases for split share dropdown
-    loadSplitShareReleases();
-}
-
-/**
- * Load releases for split share dropdown
- */
-async function loadSplitShareReleases() {
-    try {
-        const response = await API.get('/releases');
-
-        if (response.success && response.data.releases) {
-            const releases = response.data.releases;
-            displaySplitShareReleases(releases);
-        } else {
-            displaySplitShareError('No releases found');
-        }
-    } catch (error) {
-        console.error('Error loading releases for split share:', error);
-        displaySplitShareError('Failed to load releases');
-    }
-}
-
-/**
- * Display releases in split share dropdown
- */
-function displaySplitShareReleases(releases) {
-    const desktopList = document.getElementById('splitShareReleasesList');
-    const mobileList = document.getElementById('splitShareReleasesListMobile');
-
-    if (releases.length === 0) {
-        const emptyHTML = '<div class="text-center text-muted py-3"><small>No releases found</small></div>';
-        if (desktopList) desktopList.innerHTML = emptyHTML;
-        if (mobileList) mobileList.innerHTML = emptyHTML;
-        return;
-    }
-
-    const releasesHTML = releases.map(release => `
-        <a href="release-cont?release_id=${release.id}#split-share" class="release-item">
-            <div class="release-info">
-                <div class="release-title">${escapeHtml(release.release_title)}</div>
-                <div class="release-meta">${escapeHtml(release.release_version || 'Original')} • ${release.num_tracks} track(s)</div>
-            </div>
-        </a>
-    `).join('');
-
-    if (desktopList) desktopList.innerHTML = releasesHTML;
-    if (mobileList) mobileList.innerHTML = releasesHTML;
-}
-
-/**
- * Display error in split share dropdown
- */
-function displaySplitShareError(message) {
-    const errorHTML = `<div class="text-center text-muted py-3"><small>${escapeHtml(message)}</small></div>`;
-    const desktopList = document.getElementById('splitShareReleasesList');
-    const mobileList = document.getElementById('splitShareReleasesListMobile');
-
-    if (desktopList) desktopList.innerHTML = errorHTML;
-    if (mobileList) mobileList.innerHTML = errorHTML;
 }
 
 async function handleLogout() {
@@ -269,5 +187,8 @@ async function handleLogout() {
 }
 
 // Load header when DOM is ready
-document.addEventListener('DOMContentLoaded', loadDashboardHeader);
-
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadDashboardHeader);
+} else {
+    loadDashboardHeader();
+}

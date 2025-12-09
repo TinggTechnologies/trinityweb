@@ -334,7 +334,15 @@ html, body {
 
 /* Responsive Styles */
 @media (max-width: 991px) {
-  .menu-wrapper, .dropdown {
+  .menu-wrapper {
+    display: none !important;
+  }
+  
+  .dropdown {
+    display: none !important;
+  }
+  
+  .menu-item {
     display: none !important;
   }
 

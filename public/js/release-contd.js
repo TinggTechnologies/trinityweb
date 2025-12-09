@@ -1033,6 +1033,10 @@ async function saveTrack() {
         if (response.success) {
             showSuccess(`Track ${existingTrackId ? 'updated' : 'saved'} successfully!`);
 
+            // Show success modal
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+
             // Don't redirect - reload the page data instead
             console.log('Reloading release details...');
             await loadReleaseDetails();
@@ -1355,7 +1359,7 @@ async function uploadAudioFile(file) {
         // Re-enable save button
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = '<i class="bi bi-check-circle"></i> Save';
+            saveBtn.innerHTML = 'Submit Release';
         }
     }
 }

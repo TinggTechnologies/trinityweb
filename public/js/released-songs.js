@@ -399,7 +399,7 @@ async function handleDeleteConfirm() {
         }
     } catch (error) {
         console.error('Error deleting release:', error);
-        showError('Failed to delete release');
+        showError('You do not have access to delete release');
     }
 }
 
