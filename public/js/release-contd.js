@@ -3,8 +3,6 @@
  * Matches the exact structure from release-cont.html
  */
 
-console.log('release-contd.js loaded');
-
 let releaseId = null;
 let releaseData = null;
 let wavesurfer = null;
@@ -24,7 +22,6 @@ const MAX_AUDIO_SIZE_BYTES = MAX_AUDIO_SIZE_MB * 1024 * 1024;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded - release-contd.js initializing...');
 
     // Get release ID from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -67,7 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadSplitShareInvitations();
     }
 
-    console.log('Initialization complete');
 });
 
 /**
@@ -283,7 +279,7 @@ function setupEventListeners() {
     // Add Display Artist button
     const addDisplayArtistBtn = document.getElementById('addDisplayArtistBtn');
     if (addDisplayArtistBtn) {
-        console.log('Add Display Artist button found');
+       // console.log('Add Display Artist button found');
         addDisplayArtistBtn.addEventListener('click', addDisplayArtist);
     } else {
         console.log('Add Display Artist button NOT found');
@@ -292,16 +288,16 @@ function setupEventListeners() {
     // Add Writer button
     const addWriterBtn = document.getElementById('addWriterBtn');
     if (addWriterBtn) {
-        console.log('Add Writer button found');
+       // console.log('Add Writer button found');
         addWriterBtn.addEventListener('click', addWriter);
     } else {
-        console.log('Add Writer button NOT found');
+       // console.log('Add Writer button NOT found');
     }
 
     // Add Production & Engineering button
     const addProductionBtn = document.getElementById('addProductionBtn');
     if (addProductionBtn) {
-        console.log('Add Production button found');
+        //console.log('Add Production button found');
         addProductionBtn.addEventListener('click', addProduction);
     } else {
         console.log('Add Production button NOT found');
@@ -310,7 +306,7 @@ function setupEventListeners() {
     // Add Performer button
     const addPerformerBtn = document.getElementById('addPerformerBtn');
     if (addPerformerBtn) {
-        console.log('Add Performer button found');
+       // console.log('Add Performer button found');
         addPerformerBtn.addEventListener('click', addPerformer);
     } else {
         console.log('Add Performer button NOT found');
@@ -330,7 +326,7 @@ function setupEventListeners() {
         });
     }
 
-    console.log('Event listeners setup complete');
+   // console.log('Event listeners setup complete');
 }
 
 /**
@@ -339,20 +335,20 @@ function setupEventListeners() {
 async function loadReleaseDetails() {
     try {
         const response = await API.get(`releases/${releaseId}`);
-        console.log('=== RELEASE DETAILS RESPONSE ===');
-        console.log('Full response:', JSON.stringify(response, null, 2));
+        //console.log('=== RELEASE DETAILS RESPONSE ===');
+        //console.log('Full response:', JSON.stringify(response, null, 2));
 
         if (response.success) {
             releaseData = response.data;
-            console.log('Release data:', releaseData);
-            console.log('Tracks:', releaseData.tracks);
-            console.log('Stores:', releaseData.stores);
+            //console.log('Release data:', releaseData);
+            //console.log('Tracks:', releaseData.tracks);
+            //console.log('Stores:', releaseData.stores);
 
             displayReleaseInfo();
 
             // Load partner stores
             if (releaseData.stores && releaseData.stores.length > 0) {
-                console.log('Loading partner stores...');
+                //console.log('Loading partner stores...');
                 loadPartnerStores(releaseData.stores);
             } else {
                 console.warn('No stores found in release data');
@@ -360,7 +356,7 @@ async function loadReleaseDetails() {
 
             // Load existing track data if available
             if (releaseData.tracks && releaseData.tracks.length > 0) {
-                console.log('Loading track data for track ID:', releaseData.tracks[0].id);
+               // console.log('Loading track data for track ID:', releaseData.tracks[0].id);
                 existingTrackId = releaseData.tracks[0].id; // Store track ID for updates
                 loadTrackData(releaseData.tracks[0]); // Load first track
             } else {
@@ -389,14 +385,14 @@ function displayReleaseInfo() {
  * Load track data into form
  */
 function loadTrackData(track) {
-    console.log('=== LOADING TRACK DATA ===');
-    console.log('Full track object:', JSON.stringify(track, null, 2));
+    //console.log('=== LOADING TRACK DATA ===');
+    //console.log('Full track object:', JSON.stringify(track, null, 2));
 
     // Populate track details
     const songNameInput = document.getElementById('songName');
     if (songNameInput) {
         songNameInput.value = track.track_title || '';
-        console.log('Song name set to:', track.track_title);
+        //console.log('Song name set to:', track.track_title);
     } else {
         console.error('Song name input not found');
     }
@@ -404,7 +400,7 @@ function loadTrackData(track) {
     const versionInput = document.getElementById('trackVersion');
     if (versionInput) {
         versionInput.value = track.track_version || '';
-        console.log('Track version set to:', track.track_version);
+        //console.log('Track version set to:', track.track_version);
     }
 
     // ISRC is now at release level, not track level
@@ -412,12 +408,12 @@ function loadTrackData(track) {
     const previewStartInput = document.getElementById('previewStart');
     if (previewStartInput) {
         previewStartInput.value = track.preview_start || 0;
-        console.log('Preview start set to:', track.preview_start);
+        //console.log('Preview start set to:', track.preview_start);
     }
 
     // Set explicit status radio button
     if (track.explicit_content) {
-        console.log('Setting explicit status to:', track.explicit_content);
+        //console.log('Setting explicit status to:', track.explicit_content);
         const explicitRadio = document.querySelector(`input[name="explicit-status"][value="${track.explicit_content}"]`);
         if (explicitRadio) {
             explicitRadio.checked = true;
@@ -429,11 +425,11 @@ function loadTrackData(track) {
 
     // Set audio style radio button
     if (track.audio_style) {
-        console.log('Setting audio style to:', track.audio_style);
+        //console.log('Setting audio style to:', track.audio_style);
         const audioStyleRadio = document.querySelector(`input[name="audio-style"][value="${track.audio_style}"]`);
         if (audioStyleRadio) {
             audioStyleRadio.checked = true;
-            console.log('Audio style radio button checked');
+            //console.log('Audio style radio button checked');
         } else {
             console.log('Audio style radio button not found for value:', track.audio_style);
         }
@@ -445,13 +441,13 @@ function loadTrackData(track) {
 
     // Set recording year
     const recordingYearSelect = document.getElementById('recordingYear');
-    console.log('Recording year from track:', track.recording_year);
-    console.log('Recording year select element:', recordingYearSelect);
+    //console.log('Recording year from track:', track.recording_year);
+    //console.log('Recording year select element:', recordingYearSelect);
     if (recordingYearSelect) {
         if (track.recording_year) {
             recordingYearSelect.value = track.recording_year;
-            console.log('Recording year set to:', track.recording_year);
-            console.log('Recording year select value after setting:', recordingYearSelect.value);
+            //console.log('Recording year set to:', track.recording_year);
+            //console.log('Recording year select value after setting:', recordingYearSelect.value);
         } else {
             console.warn('No recording year in track data');
         }
@@ -461,13 +457,13 @@ function loadTrackData(track) {
 
     // Set recording country
     const recordingCountrySelect = document.getElementById('recordingCountry');
-    console.log('Recording country from track:', track.recording_country);
-    console.log('Recording country select element:', recordingCountrySelect);
+    //console.log('Recording country from track:', track.recording_country);
+    //console.log('Recording country select element:', recordingCountrySelect);
     if (recordingCountrySelect) {
         if (track.recording_country) {
             recordingCountrySelect.value = track.recording_country;
-            console.log('Recording country set to:', track.recording_country);
-            console.log('Recording country select value after setting:', recordingCountrySelect.value);
+            //console.log('Recording country set to:', track.recording_country);
+            //console.log('Recording country select value after setting:', recordingCountrySelect.value);
         } else {
             console.warn('No recording country in track data');
         }
@@ -479,14 +475,14 @@ function loadTrackData(track) {
     const releaseDateInput = document.getElementById('releaseDate');
     if (releaseDateInput && track.release_date) {
         releaseDateInput.value = track.release_date;
-        console.log('Release date set to:', track.release_date);
+        //console.log('Release date set to:', track.release_date);
     }
 
     // Set release time
     const releaseTimeInput = document.getElementById('releaseTime');
     if (releaseTimeInput && track.release_time) {
         releaseTimeInput.value = track.release_time;
-        console.log('Release time set to:', track.release_time);
+        //console.log('Release time set to:', track.release_time);
     }
 
     // Set worldwide release toggle
@@ -502,10 +498,10 @@ function loadTrackData(track) {
 
     // Load display artists
     if (track.artists && Array.isArray(track.artists)) {
-        console.log('All track artists:', track.artists);
+        //console.log('All track artists:', track.artists);
 
         const displayArtists = track.artists.filter(a => a.type === 'display');
-        console.log('Display artists found:', displayArtists);
+        //console.log('Display artists found:', displayArtists);
 
         const displayContainer = document.getElementById('displayArtistsContainer');
         if (displayContainer && displayArtists.length > 0) {
@@ -549,7 +545,7 @@ function loadTrackData(track) {
         ];
 
         const writers = track.artists.filter(a => a.type === 'contributor' && writerRoles.includes(a.role));
-        console.log('Writers found:', writers);
+        //console.log('Writers found:', writers);
 
         const writersContainer = document.getElementById('writersContainer');
         if (writersContainer && writers.length > 0) {
@@ -561,7 +557,7 @@ function loadTrackData(track) {
         }
 
         const production = track.artists.filter(a => a.type === 'contributor' && productionRoles.includes(a.role));
-        console.log('Production found:', production);
+        //console.log('Production found:', production);
 
         const productionContainer = document.getElementById('productionContainer');
         if (productionContainer && production.length > 0) {
@@ -573,7 +569,7 @@ function loadTrackData(track) {
         }
 
         const performers = track.artists.filter(a => a.type === 'contributor' && performerRoles.includes(a.role));
-        console.log('Performers found:', performers);
+        //console.log('Performers found:', performers);
 
         const performersContainer = document.getElementById('performersContainer');
         if (performersContainer && performers.length > 0) {
@@ -603,7 +599,7 @@ function loadTrackData(track) {
 
         // Load the audio file into waveform
         const audioUrl = `../${track.audio_file_path}`;
-        console.log('Loading audio from:', audioUrl);
+        //console.log('Loading audio from:', audioUrl);
 
         // Initialize waveform if not already done
         if (!wavesurfer && document.getElementById('waveform')) {
@@ -639,14 +635,14 @@ function loadTrackData(track) {
         }
     }
 
-    console.log('Track data loaded successfully');
+    //console.log('Track data loaded successfully');
 }
 
 /**
  * Load partner stores and check the appropriate checkboxes
  */
 function loadPartnerStores(stores) {
-    console.log('Loading partner stores:', stores);
+    //console.log('Loading partner stores:', stores);
 
     // Uncheck all partner checkboxes first
     const allPartnerCheckboxes = document.querySelectorAll('input[value="partners-check"]');
@@ -662,7 +658,7 @@ function loadPartnerStores(stores) {
                 const checkbox = header.closest('.partner-box').querySelector('input[type="checkbox"]');
                 if (checkbox) {
                     checkbox.checked = true;
-                    console.log('Checked partner:', store.store_name);
+                    //console.log('Checked partner:', store.store_name);
                 }
             }
         });
@@ -676,7 +672,7 @@ function createArtistRow(name, role) {
     const artistRow = document.createElement('div');
     artistRow.className = 'mt-3 d-flex align-items-center artist-row';
 
-    console.log('Creating artist row with name:', name, 'role:', role);
+    //console.log('Creating artist row with name:', name, 'role:', role);
 
     // Build options for artist select
     let artistOptions = '<option value="">Select artist</option>';
@@ -1073,17 +1069,17 @@ function getTrackFormData() {
     const releaseTimeInput = document.getElementById('releaseTime');
     const worldwideReleaseToggle = document.getElementById('worldwideRelease');
 
-    console.log('=== GETTING TRACK FORM DATA ===');
-    console.log('Recording Year Select Element:', recordingYearSelect);
-    console.log('Recording Year Value:', recordingYearSelect?.value);
-    console.log('Recording Country Select Element:', recordingCountrySelect);
-    console.log('Recording Country Value:', recordingCountrySelect?.value);
-    console.log('Language Value:', languageSelect?.value);
-    console.log('Audio Style Value:', audioStyle?.value);
-    console.log('Explicit Status Value:', explicitStatus?.value);
-    console.log('Release Date:', releaseDateInput?.value);
-    console.log('Release Time:', releaseTimeInput?.value);
-    console.log('Worldwide Release:', worldwideReleaseToggle?.checked);
+    //console.log('=== GETTING TRACK FORM DATA ===');
+    //console.log('Recording Year Select Element:', recordingYearSelect);
+    //console.log('Recording Year Value:', recordingYearSelect?.value);
+    //console.log('Recording Country Select Element:', recordingCountrySelect);
+    //console.log('Recording Country Value:', recordingCountrySelect?.value);
+    //console.log('Language Value:', languageSelect?.value);
+    //console.log('Audio Style Value:', audioStyle?.value);
+    //console.log('Explicit Status Value:', explicitStatus?.value);
+    //console.log('Release Date:', releaseDateInput?.value);
+    //console.log('Release Time:', releaseTimeInput?.value);
+    //console.log('Worldwide Release:', worldwideReleaseToggle?.checked);
 
     const data = {
         audioFile: audioFileInput?.files[0],
@@ -1100,7 +1096,7 @@ function getTrackFormData() {
         worldwideRelease: worldwideReleaseToggle?.checked ? 1 : 0
     };
 
-    console.log('Final track data object:', data);
+    //console.log('Final track data object:', data);
     return data;
 }
 
@@ -1188,16 +1184,16 @@ function showError(message) {
  * Setup Drag and Drop functionality
  */
 function setupDragAndDrop() {
-    console.log('Setting up drag and drop...');
+    //console.log('Setting up drag and drop...');
 
     const dropZone = document.getElementById('dropZone');
     const audioFileInput = document.getElementById('audioFile');
 
-    console.log('Drop zone:', dropZone);
-    console.log('Audio file input:', audioFileInput);
+    //console.log('Drop zone:', dropZone);
+    //console.log('Audio file input:', audioFileInput);
 
     if (!dropZone || !audioFileInput) {
-        console.log('Drop zone or audio file input not found!');
+        //console.log('Drop zone or audio file input not found!');
         return;
     }
 
@@ -1247,15 +1243,15 @@ function handleDrop(e) {
 }
 
 function handleFiles(files) {
-    console.log('handleFiles called with:', files);
+    //console.log('handleFiles called with:', files);
 
     if (files.length === 0) {
-        console.log('No files selected');
+        //console.log('No files selected');
         return;
     }
 
     const file = files[0];
-    console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
+    //console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
 
     // Validate file size (300MB limit)
     if (file.size > MAX_AUDIO_SIZE_BYTES) {
@@ -1269,16 +1265,16 @@ function handleFiles(files) {
     const validExtensions = ['.wav', '.flac', '.aiff', '.aif'];
     const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
 
-    console.log('File extension:', fileExtension);
-    console.log('File type:', file.type);
+    //console.log('File extension:', fileExtension);
+    //console.log('File type:', file.type);
 
     if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
-        console.log('Invalid file type');
+        //console.log('Invalid file type');
         showError('Please upload a valid audio file (AIFF, FLAC, or WAV only)');
         return;
     }
 
-    console.log('File is valid, proceeding...');
+    //console.log('File is valid, proceeding...');
 
     // Store the file
     currentAudioFile = file;
@@ -1315,7 +1311,7 @@ function displayAudioInfo(file) {
  * Upload audio file with progress tracking
  */
 async function uploadAudioFile(file) {
-    console.log('Starting audio file upload:', file.name);
+    //console.log('Starting audio file upload:', file.name);
 
     isAudioUploading = true;
     uploadedAudioPath = null;
@@ -1339,7 +1335,7 @@ async function uploadAudioFile(file) {
         });
 
         if (response.success) {
-            console.log('Audio uploaded successfully:', response.data);
+           // console.log('Audio uploaded successfully:', response.data);
             uploadedAudioPath = response.data.temp_file;
             showUploadProgress(100, true);
             showSuccess('Audio file uploaded successfully!');
@@ -1347,7 +1343,7 @@ async function uploadAudioFile(file) {
             throw new Error(response.message || 'Upload failed');
         }
     } catch (error) {
-        console.error('Audio upload error:', error);
+        //console.error('Audio upload error:', error);
         showError('Failed to upload audio file: ' + error.message);
         showUploadProgress(0, false, true);
 
@@ -1505,11 +1501,11 @@ function resetAudioSelection() {
 }
 
 function loadWaveform(file) {
-    console.log('Loading waveform for file:', file.name);
+    //console.log('Loading waveform for file:', file.name);
 
     // Check if WaveSurfer is available
     if (typeof WaveSurfer === 'undefined') {
-        console.error('WaveSurfer is not loaded!');
+        //console.error('WaveSurfer is not loaded!');
         showError('Audio player library not loaded. Please refresh the page.');
         return;
     }
@@ -1520,7 +1516,7 @@ function loadWaveform(file) {
             wavesurfer.destroy();
         }
 
-        console.log('Creating WaveSurfer instance...');
+        //console.log('Creating WaveSurfer instance...');
 
         // Create new waveform
         wavesurfer = WaveSurfer.create({
@@ -1537,16 +1533,16 @@ function loadWaveform(file) {
             normalize: true
         });
 
-        console.log('WaveSurfer instance created');
+        //console.log('WaveSurfer instance created');
 
         // Load audio file
         const fileURL = URL.createObjectURL(file);
-        console.log('Loading audio from URL:', fileURL);
+        //console.log('Loading audio from URL:', fileURL);
         wavesurfer.load(fileURL);
 
         // Update duration when ready
         wavesurfer.on('ready', () => {
-            console.log('Waveform ready');
+            //console.log('Waveform ready');
             const duration = wavesurfer.getDuration();
             document.getElementById('duration').textContent = formatTime(duration);
         });
@@ -1632,11 +1628,11 @@ function formatTime(seconds) {
  * Add Display Artist
  */
 function addDisplayArtist() {
-    console.log('Adding display artist...');
+    //console.log('Adding display artist...');
 
     const container = document.getElementById('displayArtistsContainer');
     if (!container) {
-        console.error('Display artists container not found');
+        //console.error('Display artists container not found');
         return;
     }
 
@@ -1678,18 +1674,18 @@ function addDisplayArtist() {
         });
     }
 
-    console.log('Display artist added');
+    //console.log('Display artist added');
 }
 
 /**
  * Add Writer
  */
 function addWriter() {
-    console.log('Adding writer...');
+    //console.log('Adding writer...');
 
     const container = document.getElementById('writersContainer');
     if (!container) {
-        console.error('Writers container not found');
+        //console.error('Writers container not found');
         return;
     }
 
@@ -1735,14 +1731,14 @@ function addWriter() {
         });
     }
 
-    console.log('Writer added');
+    //console.log('Writer added');
 }
 
 /**
  * Add Production & Engineering
  */
 function addProduction() {
-    console.log('Adding production & engineering...');
+    //console.log('Adding production & engineering...');
 
     const container = document.getElementById('productionContainer');
     if (!container) {
@@ -1796,14 +1792,14 @@ function addProduction() {
         });
     }
 
-    console.log('Production & Engineering added');
+    //console.log('Production & Engineering added');
 }
 
 /**
  * Add Performer
  */
 function addPerformer() {
-    console.log('Adding performer...');
+   // console.log('Adding performer...');
 
     const container = document.getElementById('performersContainer');
     if (!container) {
@@ -1858,14 +1854,14 @@ function addPerformer() {
         });
     }
 
-    console.log('Performer added');
+    //console.log('Performer added');
 }
 
 /**
  * Setup remove buttons for existing artists/contributors
  */
 function setupRemoveButtons() {
-    console.log('Setting up remove buttons...');
+    //console.log('Setting up remove buttons...');
 
     // Remove artist buttons
     document.querySelectorAll('.remove-artist').forEach(btn => {
@@ -1907,14 +1903,14 @@ function setupRemoveButtons() {
         });
     });
 
-    console.log('Remove buttons setup complete');
+    //console.log('Remove buttons setup complete');
 }
 
 /**
  * Setup Split Share functionality
  */
 function setupSplitShare() {
-    console.log('Setting up split share functionality...');
+    //console.log('Setting up split share functionality...');
 
     // Handle split share form submission
     const splitShareForm = document.getElementById('splitShareForm');
@@ -1982,7 +1978,7 @@ async function handleSplitShareSubmit(e) {
             showError(response.message || 'Failed to send invitation');
         }
     } catch (error) {
-        console.error('Error sending invitation:', error);
+        //console.error('Error sending invitation:', error);
         showError(error.message || 'Failed to send invitation');
     }
 }
@@ -1992,9 +1988,10 @@ async function handleSplitShareSubmit(e) {
  */
 async function getCurrentTotalSplit() {
     try {
-        const response = await API.get(`split-shares/${releaseId}`);
-        if (response.success && response.data.invitations) {
-            return response.data.invitations.reduce((total, inv) => {
+        const response = await API.get(`split-shares/release/${releaseId}`);
+        if (response.success && response.data.pending) {
+            const allInvitations = [...(response.data.pending || []), ...(response.data.approved || [])];
+            return allInvitations.reduce((total, inv) => {
                 return total + parseFloat(inv.split_percentage || 0);
             }, 0);
         }
@@ -2008,15 +2005,17 @@ async function getCurrentTotalSplit() {
  * Load split share invitations
  */
 async function loadSplitShareInvitations() {
-    console.log('Loading split share invitations for release:', releaseId);
+    //console.log('Loading split share invitations for release:', releaseId);
 
     try {
-        const response = await API.get(`split-shares/${releaseId}`);
+        const response = await API.get(`split-shares/release/${releaseId}`);
 
         if (response.success) {
             const owner = response.data.owner || null;
-            const invitations = response.data.invitations || [];
-            displayInvitations(invitations, owner);
+            const pending = response.data.pending || [];
+            const approved = response.data.approved || [];
+
+            displayInvitations(pending, approved, owner);
         } else {
             console.error('Failed to load invitations:', response.message);
         }
@@ -2028,7 +2027,7 @@ async function loadSplitShareInvitations() {
 /**
  * Display invitations
  */
-function displayInvitations(invitations, owner) {
+function displayInvitations(pending, approved, owner) {
     const ownerContainer = document.getElementById('ownerSplitContainer');
     const pendingContainer = document.getElementById('pendingInvitationsContainer');
     const approvedContainer = document.getElementById('approvedSplitsContainer');
@@ -2049,8 +2048,7 @@ function displayInvitations(invitations, owner) {
         `;
     }
 
-    const pending = invitations.filter(inv => inv.status === 'pending');
-    const approved = invitations.filter(inv => inv.status === 'accepted');
+    // pending and approved are already separated from API response
 
     // Display pending invitations
     if (pending.length === 0) {
@@ -2123,9 +2121,7 @@ async function resendInvitation(invitationId) {
             showError(response.message || 'Failed to resend invitation');
         }
     } catch (error) {
-        console.error('Error resending invitation:', error);
+        //console.error('Error resending invitation:', error);
         showError('Failed to resend invitation');
     }
 }
-
-// End of file
