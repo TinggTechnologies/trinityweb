@@ -26,7 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Released Songs page initializing...');
 
     // Set current year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
 
     // Load releases
     loadReleases();
@@ -51,8 +54,11 @@ async function loadReleases() {
             </div>
         `;
 
+        console.log('Making API request to:', `/releases?page=${currentPage}&limit=${recordsPerPage}`);
         const response = await API.get(`/releases?page=${currentPage}&limit=${recordsPerPage}`);
         console.log('API Response:', response);
+        console.log('Response success:', response.success);
+        console.log('Response data:', response.data);
 
         if (response.success) {
             currentReleases = response.data.releases || [];

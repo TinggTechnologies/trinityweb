@@ -2040,7 +2040,7 @@ function displayInvitations(invitations, owner) {
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                         <h6 class="mb-1"><i class="bi bi-person-fill text-success"></i> ${escapeHtml(owner.name)}</h6>
-                        <p class="mb-0 text-muted small">Split: <strong class="text-success">${owner.percentage}%</strong></p>
+                        <p class="mb-0 text-muted small">Split: <strong class="text-success">${owner.split_percentage}%</strong></p>
                         <p class="mb-0 text-muted small">${escapeHtml(owner.email)}</p>
                     </div>
                     <span class="badge bg-success">Owner</span>
